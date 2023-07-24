@@ -13,6 +13,13 @@ const navigationConfig = [
     icon: "heroicons-outline:home",
     url: "dashboard",
   },
+  {
+    id: "profile",
+    title: "Profile/Preferences",
+    type: "item",
+    icon: "heroicons-outline:home",
+    url: "profile",
+  },
 ];
 
 export default navigationConfig;
