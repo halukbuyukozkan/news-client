@@ -14,7 +14,9 @@ export async function getUsers() {
   });
 }
 
-export function updateUser(data, id) {
+export function updateUser(data, id, preferences) {
+  data.preferences = preferences;
+  console.log("Data:", data);
   return new Promise((resolve, reject) => {
     axios.put(user_url + "/" + id, data).then((response) => {
       console.log("Response:", response);
