@@ -1,17 +1,10 @@
 import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
-import { memo, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import Chip from "@mui/material/Chip";
-import Box from "@mui/material/Box";
+import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import FusePageSimple from "@fuse/core/FusePageSimple";
-import Chart from "react-apexcharts";
-import axios from "axios";
-import { parseInt } from "lodash";
-import WeekChart from "./WeekChart";
+import { DataGrid } from "@mui/x-data-grid";
+import { getNews } from "src/app/services/newsService/newsService";
 
 const Root = styled(FusePageSimple)(({ theme }) => ({
   "& .FusePageSimple-header": {
@@ -26,40 +19,46 @@ const Root = styled(FusePageSimple)(({ theme }) => ({
   "& .FusePageSimple-sidebarContent": {},
 }));
 
-function calcPercentage(main, summary) {
-  return (main * 100) / summary;
-}
-
-const weekDays = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-
-function dataParseForWeek(data, dateKey) {
-  let valuesForWeekdays = [0, 0, 0, 0, 0, 0, 0];
-
-  data.forEach((element) => {
-    let weekNumber = new Date(element[dateKey]).getDay();
-    valuesForWeekdays[weekNumber] = valuesForWeekdays[weekNumber] + 1;
-  });
-  return valuesForWeekdays;
-}
-
 function ExamplePage(props) {
+  const [news, setNews] = useState([]);
+  useEffect(() => {
+    getNews().then((data) => {
+      setNews(data);
+    });
+  }, []);
+
+  const columns = [
+    { field: "source", headerName: "Source", width: 130 },
+    { field: "author", headerName: "Author", width: 130 },
+    { field: "title", headerName: "Title", width: 130 },
+    { field: "category", headerName: "Category", width: 130 },
+    { field: "publishedAt", headerName: "Published At", width: 130 },
+  ];
+
+  const rows = news.map((item) => {
+    return {
+      id: item.title,
+      source: item.source,
+      author: item.author,
+      title: item.title,
+      category: item.category,
+      publishedAt: item.publishedAt,
+    };
+  });
+
+  const test = [
+    {
+      id: 1,
+      source: "CNN",
+      author: "John Doe",
+      title: "Lorem Ipsum",
+      category: "News",
+      publishedAt: "2021-10-10",
+    },
+  ];
+
   const theme = useTheme();
   const { t } = useTranslation("examplePage");
-  const [awaitRender, setAwaitRender] = useState(true);
-  const [allData, setAllData] = useState({
-    orders: [],
-    products: [],
-    approvedOrders: 0,
-    unApprovedOrders: 0,
-  });
 
   return (
     <Root
@@ -70,7 +69,19 @@ function ExamplePage(props) {
       }
       content={
         <div className="p-24 w-full flex flex-col">
-          <h3>test</h3>
+          <div style={{ height: 400, width: "100%" }}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: { page: 0, pageSize: 5 },
+                },
+              }}
+              pageSizeOptions={[5, 10]}
+              checkboxSelection
+            />
+          </div>
         </div>
       }
       scroll="content"
